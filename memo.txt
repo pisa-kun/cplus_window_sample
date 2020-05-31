@@ -1,0 +1,6 @@
+60秒のタイマーをもつ
+タイマーの文字をwindowに表示
+windowはctrl+alt でイベント発生
+clickイベントでwindow消滅(自滅できればok)
+
+// VK = Virtual Keyboard
