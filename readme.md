@@ -44,6 +44,8 @@ case WM_TIMER:
             }
             break;
         }
+        // 一旦画面を無効→WM_PAINTを再び呼んで再描画
+        InvalidateRect(hwnd, NULL, TRUE);
 ```
 
 

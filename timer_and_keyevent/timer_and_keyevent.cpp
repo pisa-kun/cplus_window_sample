@@ -8,6 +8,7 @@
 #define MAX_LOADSTRING 100
 #define TM_COUNT1 1
 #define Seconds 1000
+#define BUTTON_ID1 99
 
 // グローバル変数:
 HINSTANCE hInst;                                // 現在のインターフェイス
@@ -103,6 +104,14 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
       CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
 
+   // ボタンはクリックされると親ウインドウにWM_COMMANDを送る
+   CreateWindow(
+       TEXT("BUTTON"), TEXT("Hoge"),
+       WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+       0, 400, 100, 50,
+       hWnd, (HMENU)BUTTON_ID1, hInstance, NULL
+   );
+
    if (!hWnd)
    {
       return FALSE;
@@ -138,6 +147,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
     case WM_CREATE:
         SetTimer(hwnd, TM_COUNT1, Seconds, NULL); // 1000ミリ(1second)毎に変化するタイマー
         return 0;
+    case WM_COMMAND:
+        switch (LOWORD(wp)) {
+        case BUTTON_ID1:
+            iCount1 = 444;
+            break;
+        }
     case WM_KEYDOWN:
         switch (wp) {
         case VK_CONTROL:
