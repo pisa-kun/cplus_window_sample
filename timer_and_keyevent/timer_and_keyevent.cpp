@@ -9,6 +9,8 @@
 #define TM_COUNT1 1
 #define Seconds 1000
 #define BUTTON_ID1 99
+#define BUTTON_ID2 98
+#define BUTTON_ID3 97
 
 // グローバル変数:
 HINSTANCE hInst;                                // 現在のインターフェイス
@@ -120,6 +122,22 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
        hWnd, (HMENU)BUTTON_ID1, hInstance, NULL
    );
 
+   // クリックされたらメッセージボックス用のwindowを作成する
+   CreateWindow(
+       TEXT("BUTTON"), TEXT("CreateWindow"),
+       WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+       400, 200, 100, 50,
+       hWnd, (HMENU)BUTTON_ID2, hInstance, NULL
+   );
+
+   // クリックされたらメッセージボックス用のwindowを作成する
+   CreateWindow(
+       TEXT("BUTTON"), TEXT("Cange"),
+       WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+       300, 200, 100, 50,
+       hWnd, (HMENU)BUTTON_ID3, hInstance, NULL
+   );
+
    if (!hWnd)
    {
       return FALSE;
@@ -205,6 +223,27 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
                 InvalidateRect(hwnd, NULL, TRUE);
                 break;
             }
+        }
+
+        // create ボタン
+        if (LOWORD(wp) == BUTTON_ID2)
+        {
+            // 第一引数に親ウインドウを指定できる
+            HWND hWnd2 = CreateWindowW(TEXT("STATIC"), L"Hoge Utility", WS_OVERLAPPEDWINDOW | WS_VISIBLE,
+                CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, hwnd, NULL, hInst, NULL);
+
+            CreateWindow(
+                TEXT("BUTTON"), L"シャットダウン",
+                WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+                0, 0, 100, 50,
+                hWnd2, NULL, hInst, NULL
+            );
+        }
+
+        // ボタンのラベルを変更する
+        if (LOWORD(wp) == BUTTON_ID3)
+        {
+            SetDlgItemText(hwnd, BUTTON_ID2, L"シャットダウン");
         }
 
     case WM_TIMER:
