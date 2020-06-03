@@ -4,6 +4,7 @@
 #include "framework.h"
 #include "timer_and_keyevent.h"
 #include <iostream>
+#include "resource.h"
 
 #define MAX_LOADSTRING 100
 #define TM_COUNT1 1
@@ -243,7 +244,11 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
         // ボタンのラベルを変更する
         if (LOWORD(wp) == BUTTON_ID3)
         {
-            SetDlgItemText(hwnd, BUTTON_ID2, L"シャットダウン");
+            // リソースファイルから文字を取得
+            // 104に格納している文字
+            TCHAR str1[64];
+            LoadString(hInst, IDS_STRING104, str1, sizeof(str1));
+            SetDlgItemText(hwnd, BUTTON_ID2, str1);
         }
 
     case WM_TIMER:
