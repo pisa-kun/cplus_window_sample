@@ -15,6 +15,12 @@ HINSTANCE hInst;                                // 現在のインターフェ�
 WCHAR szTitle[MAX_LOADSTRING];                  // タイトル バーのテキスト
 WCHAR szWindowClass[MAX_LOADSTRING];            // メイン ウィンドウ クラス名
 
+LPCTSTR strItem[] = {
+    TEXT("60 seconds") ,
+    TEXT("120 second") ,
+    TEXT("300 seconds") ,
+};
+
 // このコード モジュールに含まれる関数の宣言を転送します:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
@@ -108,7 +114,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    CreateWindow(
        TEXT("BUTTON"), TEXT("Hoge"),
        WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-       0, 400, 100, 50,
+       0, 200, 100, 50,
        hWnd, (HMENU)BUTTON_ID1, hInstance, NULL
    );
 
@@ -139,6 +145,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
     RECT rctSize;
     static int iCount1 = 60; // 60秒タイマー
     static TCHAR strCount[64];
+    static TCHAR strText[64];
+
+    static HWND combo, label;
+    int i;
 
     switch (msg) {
     case WM_DESTROY:
@@ -146,8 +156,35 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
         return 0;
     case WM_CREATE:
         SetTimer(hwnd, TM_COUNT1, Seconds, NULL); // 1000ミリ(1second)毎に変化するタイマー
+
+        // コンボボックスの作成
+        // CBS_DROPDOWNLIST で入力不可のリスト表示
+        combo = CreateWindow(
+            TEXT("COMBOBOX"), NULL,
+            WS_CHILD | WS_VISIBLE |  CBS_DROPDOWNLIST,
+            400, 0, 200, 200, hwnd, (HMENU)1,
+            ((LPCREATESTRUCT)(lp))->hInstance, NULL);
+        // コンボボックスに要素を追加
+        for (i = 0; i < 3; i++)
+            SendMessage(combo, CB_ADDSTRING, 0, (LPARAM)strItem[i]);
+
+        // コンボボックスの内容を表示するラベルを作成する
+        label = CreateWindow(
+            TEXT("STATIC"), NULL,
+            WS_CHILD | WS_VISIBLE,
+            0, 100, 200, 100, hwnd, (HMENU)2,
+            ((LPCREATESTRUCT)(lp))->hInstance, NULL);
+
         return 0;
     case WM_COMMAND:
+        if (HIWORD(wp) == CBN_SELCHANGE) {
+            wsprintf(strText, TEXT("アイテム数 = %d\n選択項目 = %d\n待機時間 = %s"),
+                SendMessage(combo, CB_GETCOUNT, 0, 0),
+                SendMessage(combo, CB_GETCURSEL, 0, 0),
+                strItem[SendMessage(combo, CB_GETCURSEL, 0, 0)]);
+            SetWindowText(label, strText);
+        }
+
         switch (LOWORD(wp)) {
         case BUTTON_ID1:
             iCount1 = 444;
