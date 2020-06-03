@@ -16,9 +16,9 @@ WCHAR szTitle[MAX_LOADSTRING];                  // タイトル バーのテキ�
 WCHAR szWindowClass[MAX_LOADSTRING];            // メイン ウィンドウ クラス名
 
 LPCTSTR strItem[] = {
-    TEXT("60 seconds") ,
-    TEXT("120 second") ,
-    TEXT("300 seconds") ,
+    TEXT("60  (1min)") ,
+    TEXT("180 (3min)") ,
+    TEXT("300 (5min)") ,
 };
 
 int lastTime[] = { 60,180,300 }; // strItemのstrをint変換する配列
@@ -180,11 +180,16 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
         return 0;
     case WM_COMMAND:
         if (HIWORD(wp) == CBN_SELCHANGE) {
+            auto time = lastTime[SendMessage(combo, CB_GETCURSEL, 0, 0)];
             wsprintf(strText, TEXT("アイテム数 = %d\n選択項目 = %d\n待機時間 = %d"),
                 SendMessage(combo, CB_GETCOUNT, 0, 0),
                 SendMessage(combo, CB_GETCURSEL, 0, 0),
-                lastTime[SendMessage(combo, CB_GETCURSEL, 0, 0)]);
+                time);
             SetWindowText(label, strText);
+            // iCountをSetされた時間に更新する
+            // 忘れずに再描画
+            iCount1 = time;
+            InvalidateRect(hwnd, NULL, TRUE);
         }
 
         switch (LOWORD(wp)) {
