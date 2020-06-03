@@ -21,6 +21,8 @@ LPCTSTR strItem[] = {
     TEXT("300 seconds") ,
 };
 
+int lastTime[] = { 60,180,300 }; // strItemのstrをint変換する配列
+
 // このコード モジュールに含まれる関数の宣言を転送します:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
@@ -178,10 +180,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
         return 0;
     case WM_COMMAND:
         if (HIWORD(wp) == CBN_SELCHANGE) {
-            wsprintf(strText, TEXT("アイテム数 = %d\n選択項目 = %d\n待機時間 = %s"),
+            wsprintf(strText, TEXT("アイテム数 = %d\n選択項目 = %d\n待機時間 = %d"),
                 SendMessage(combo, CB_GETCOUNT, 0, 0),
                 SendMessage(combo, CB_GETCURSEL, 0, 0),
-                strItem[SendMessage(combo, CB_GETCURSEL, 0, 0)]);
+                lastTime[SendMessage(combo, CB_GETCURSEL, 0, 0)]);
             SetWindowText(label, strText);
         }
 
