@@ -152,7 +152,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
     static HWND combo, label;
     int i;
 
-    switch (msg) {
+    switch (msg) 
+    {
     case WM_DESTROY:
         PostQuitMessage(0);
         return 0;
@@ -179,7 +180,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 
         return 0;
     case WM_COMMAND:
-        if (HIWORD(wp) == CBN_SELCHANGE) {
+        if (HIWORD(wp) == CBN_SELCHANGE)
+        {
             auto time = lastTime[SendMessage(combo, CB_GETCURSEL, 0, 0)];
             wsprintf(strText, TEXT("アイテム数 = %d\n選択項目 = %d\n待機時間 = %d"),
                 SendMessage(combo, CB_GETCOUNT, 0, 0),
@@ -192,27 +194,19 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
             InvalidateRect(hwnd, NULL, TRUE);
         }
 
-        switch (LOWORD(wp)) {
-        case BUTTON_ID1:
-            iCount1 = 444;
-            break;
+        if (LOWORD(wp) == BUTTON_ID1)
+        {
+            bool isCtrlPress = (GetKeyState(VK_CONTROL) < 0);
+            bool isAltPress = (GetKeyState(VK_MENU) < 0);
+
+            if (isCtrlPress && isAltPress) 
+            {
+                iCount1 = 2 * Seconds;
+                InvalidateRect(hwnd, NULL, TRUE);
+                break;
+            }
         }
-    case WM_KEYDOWN:
-        switch (wp) {
-        case VK_CONTROL:
-            iCount1 = 222;
-            break;
-        case VK_RIGHT:
-            iCount1 = 333;
-            break;
-        case VK_MENU: //ctrl+alt = alt扱い？
-            
-                // ctrl + alt、でウインドウ表示。yesだとカウンターの数値を2倍にする
-                auto result = MessageBox(hwnd, L"push", L"title", MB_OKCANCEL);
-                if (result == 1 /*MB_OK = yes*/) {
-                    iCount1 = 2 * Seconds;
-                }
-        }
+
     case WM_TIMER:
         switch (wp) {
         case TM_COUNT1:
