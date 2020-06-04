@@ -31,6 +31,7 @@ ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
+INT_PTR CALLBACK       DialogProc(HWND, UINT, WPARAM, LPARAM);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -170,6 +171,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 
     static HWND combo, label;
     int i;
+    INT_PTR ret;
 
     switch (msg) 
     {
@@ -196,7 +198,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
             WS_CHILD | WS_VISIBLE,
             0, 100, 200, 100, hwnd, (HMENU)2,
             ((LPCREATESTRUCT)(lp))->hInstance, NULL);
-
         return 0;
     case WM_COMMAND:
         if (HIWORD(wp) == CBN_SELCHANGE)
@@ -229,16 +230,29 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
         // create ボタン
         if (LOWORD(wp) == BUTTON_ID2)
         {
-            // 第一引数に親ウインドウを指定できる
-            HWND hWnd2 = CreateWindowW(TEXT("STATIC"), L"Hoge Utility", WS_OVERLAPPEDWINDOW | WS_VISIBLE,
-                CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, hwnd, NULL, hInst, NULL);
+            // ctrl + alt押下時のみメッセージボックス表示
+            auto ret = DialogBox(NULL, MAKEINTRESOURCE(IDD_DIALOG1), hwnd, DialogProc);
+            if (ret == -1)
+            {
+                MessageBox(hwnd, L"not create dialog", L"but", MB_OK);
+                break;
+            }
+           
+            if(ret == 70)
+            {
+                MessageBox(hwnd, L"ctrl+alt", L"un normal", MB_OK);
+            }
 
-            CreateWindow(
-                TEXT("BUTTON"), L"シャットダウン",
-                WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-                0, 0, 100, 50,
-                hWnd2, NULL, hInst, NULL
-            );
+            //// 第一引数に親ウインドウを指定できる
+            //HWND hWnd2 = CreateWindowW(TEXT("STATIC"), L"Hoge Utility", WS_OVERLAPPEDWINDOW | WS_VISIBLE,
+            //    CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, hwnd, NULL, hInst, NULL);
+
+            //CreateWindow(
+            //    TEXT("BUTTON"), L"シャットダウン",
+            //    WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+            //    0, 0, 100, 50,
+            //    hWnd2, NULL, hInst, NULL
+            //);
         }
 
         // ボタンのラベルを変更する
@@ -288,6 +302,35 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
         {
             EndDialog(hDlg, LOWORD(wParam));
+            return (INT_PTR)TRUE;
+        }
+        break;
+    }
+    return (INT_PTR)FALSE;
+}
+
+INT_PTR CALLBACK DialogProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+    UNREFERENCED_PARAMETER(lParam);
+    switch (msg)
+    {
+    case WM_INITDIALOG:
+        return (INT_PTR)TRUE;
+    case WM_CLOSE:
+        EndDialog(hWnd, IDOK);
+        return (INT_PTR)TRUE;
+    case WM_COMMAND:
+        if (LOWORD(wParam) == IDOK)
+        {
+            bool isCtrlPress = (GetKeyState(VK_CONTROL) < 0);
+            bool isAltPress = (GetKeyState(VK_MENU) < 0);
+
+            if (isCtrlPress && isAltPress)
+            {
+                EndDialog(hWnd, 70);
+                return (INT_PTR)TRUE;
+            }
+            EndDialog(hWnd, IDOK);
             return (INT_PTR)TRUE;
         }
         break;
