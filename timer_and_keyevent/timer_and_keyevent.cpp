@@ -168,10 +168,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
     static int iCount1 = 60; // 60秒タイマー
     static TCHAR strCount[64];
     static TCHAR strText[64];
+    static TCHAR messageT[128];
 
     static HWND combo, label;
     int i;
-    INT_PTR ret;
 
     switch (msg) 
     {
@@ -230,8 +230,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
         // create ボタン
         if (LOWORD(wp) == BUTTON_ID2)
         {
+            auto instance = MAKEINTRESOURCE(IDD_DIALOG1);
+            
             // ctrl + alt押下時のみメッセージボックス表示
-            auto ret = DialogBox(NULL, MAKEINTRESOURCE(IDD_DIALOG1), hwnd, DialogProc);
+            auto ret = DialogBox(NULL, instance, hwnd, DialogProc);
+
+            auto active = GetActiveWindow();
             if (ret == -1)
             {
                 MessageBox(hwnd, L"not create dialog", L"but", MB_OK);
@@ -240,7 +244,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
            
             if(ret == 70)
             {
-                MessageBox(hwnd, L"ctrl+alt", L"un normal", MB_OK);
+                wsprintf(messageT, L"return value: %d", ret);
+                MessageBox(active, messageT, L"un normal", MB_OK);
             }
 
             //// 第一引数に親ウインドウを指定できる
