@@ -9,6 +9,7 @@
 #define IDM_ABOUT                       104
 #define IDS_STRING104                   104
 #define IDM_EXIT                        105
+#define IDS_MESSAGE                     105
 #define IDI_TIMERANDKEYEVENT            107
 #define IDI_SMALL                       108
 #define IDC_TIMERANDKEYEVENT            109

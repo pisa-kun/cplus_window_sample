@@ -43,8 +43,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     // TODO: ここにコードを挿入してください。
 
     // グローバル文字列を初期化する
-    LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
-    LoadStringW(hInstance, IDC_TIMERANDKEYEVENT, szWindowClass, MAX_LOADSTRING);
+    LoadStringW(GetModuleHandle(NULL), IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
+    LoadStringW(GetModuleHandle(NULL), IDC_TIMERANDKEYEVENT, szWindowClass, MAX_LOADSTRING);
     MyRegisterClass(hInstance);
 
     // アプリケーション初期化の実行:
@@ -201,8 +201,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
     case WM_COMMAND:
         if (HIWORD(wp) == CBN_SELCHANGE)
         {
+            TCHAR str_hoge[MAX_LOADSTRING];
+            LoadString(GetModuleHandle(NULL), IDS_MESSAGE, str_hoge, sizeof(str_hoge) / sizeof(str_hoge[0]));
             auto time = lastTime[SendMessage(combo, CB_GETCURSEL, 0, 0)];
-            wsprintf(strText, TEXT("アイテム数 = %d\n選択項目 = %d\n待機時間 = %d"),
+            wsprintf(strText, str_hoge, // tchar でもOK?
                 SendMessage(combo, CB_GETCOUNT, 0, 0),
                 SendMessage(combo, CB_GETCURSEL, 0, 0),
                 time);
@@ -246,8 +248,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
         {
             // リソースファイルから文字を取得
             // 104に格納している文字
-            TCHAR str1[64];
-            LoadString(hInst, IDS_STRING104, str1, sizeof(str1));
+            TCHAR str1[64]; 
+            /*LoadString(hInst, IDS_STRING104, str1, sizeof(str1));*/
+            LoadString(GetModuleHandle(NULL), IDS_STRING104, str1, sizeof(str1)/sizeof(str1[0]));
             SetDlgItemText(hwnd, BUTTON_ID2, str1);
         }
 
